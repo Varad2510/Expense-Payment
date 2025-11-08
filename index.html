@@ -50,7 +50,7 @@
     document.getElementById("modalAmount").textContent = `₹${amount}`;
 
     // Build UPI link
-    const upiLink = `upi://pay?pa=merchant@upi&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
+    const upiLink = `upi://pay?pa=paytmqr1xquxkjxfb@paytm&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
 
     function openModal() {
       document.getElementById("paymentModal").classList.remove("hidden");
@@ -77,7 +77,7 @@
         return;
       }
 
-      const deepLink = `${scheme}?pa=merchant@upi&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
+      const deepLink = `${scheme}?pa=paytmqr1xquxkjxfb@paytm&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
 
       if (/Android/i.test(navigator.userAgent)) {
         window.location.href = deepLink;
