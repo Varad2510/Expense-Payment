@@ -68,17 +68,21 @@
 
 
     
-    function payWithUPI() {
-      if (/Android/i.test(navigator.userAgent)) {
-        window.location.href = upiLink;
-        setTimeout(() => {
-          window.location.href = "thankyou.html";
-        }, 2000);
-      } else {
-        alert("UPI apps can only be opened on Android devices.");
-      }
-    }
+   function payWithUPI() {
+  if (/Android/i.test(navigator.userAgent)) {
+    const intentLink = `intent://pay?pa=${upiID}&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder#Intent;scheme=upi;package=com.phonepe.app;end`;
 
+    const a = document.createElement("a");
+    a.href = intentLink;
+    a.click();
+
+    setTimeout(() => {
+      window.location.href = "thankyou.html";
+    }, 2000);
+  } else {
+    alert("UPI apps can only be opened on Android devices.");
+  }
+}
     function generateQR() {
       const qrDiv = document.getElementById("qrcode");
       qrDiv.classList.remove("hidden");
