@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UPI Payment Reminder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <!-- Reminder Card -->
+  <div class="bg-white p-8 rounded-lg shadow-md text-center max-w-sm w-full">
+    <h2 class="text-2xl font-semibold mb-2">Pending Payment Reminder</h2>
+    <p class="text-gray-600 mb-4">
+      Hey <span id="friendName" class="font-bold text-blue-600">Friend</span>! You owe 
+      <span id="amount" class="font-bold text-green-600">₹499</span>. Click below to settle it.
+    </p>
+    <button onclick="openModal()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+      Click here to pay
+    </button>
+  </div>
+
+  <!-- Modal -->
+  <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg w-80 space-y-4">
+      <h3 class="text-xl font-semibold text-center">Choose your UPI app to pay <span id="modalAmount">₹499</span></h3>
+      <div class="grid grid-cols-2 gap-4 text-center">
+        <button onclick="payWithApp('GooglePay')" class="bg-gray-100 p-2 rounded hover:bg-gray-200">Google Pay</button>
+        <button onclick="payWithApp('PhonePe')" class="bg-gray-100 p-2 rounded hover:bg-gray-200">PhonePe</button>
+        <button onclick="payWithApp('Paytm')" class="bg-gray-100 p-2 rounded hover:bg-gray-200">Paytm</button>
+        <button onclick="payWithApp('BHIM')" class="bg-gray-100 p-2 rounded hover:bg-gray-200">BHIM</button>
+        <button onclick="payWithApp('AmazonPay')" class="bg-gray-100 p-2 rounded hover:bg-gray-200 col-span-2">Amazon Pay</button>
+        <button onclick="generateQR()" class="bg-purple-600 text-white p-2 rounded col-span-2 hover:bg-purple-700">Or scan QR to pay</button>
+      </div>
+      <div id="qrcode" class="flex justify-center mt-4 hidden"></div>
+      <button onclick="closeModal()" class="text-sm text-gray-500 hover:underline block mx-auto">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Read query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const friendName = urlParams.get("name") || "Friend";
+    const amount = urlParams.get("amount") || "499";
+
+    // Update UI
+    document.getElementById("friendName").textContent = friendName;
+    document.getElementById("amount").textContent = `₹${amount}`;
+    document.getElementById("modalAmount").textContent = `₹${amount}`;
+
+    // Build UPI link
+    const upiLink = `upi://pay?pa=merchant@upi&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
+
+    function openModal() {
+      document.getElementById("paymentModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("paymentModal").classList.add("hidden");
+      document.getElementById("qrcode").classList.add("hidden");
+      document.getElementById("qrcode").innerHTML = "";
+    }
+
+    function payWithApp(app) {
+      const appSchemes = {
+        GooglePay: "tez://upi/pay",
+        PhonePe: "phonepe://upi/pay",
+        Paytm: "paytmmp://pay",
+        BHIM: "bhim://upi/pay",
+        AmazonPay: "amazonpay://upi/pay"
+      };
+
+      const scheme = appSchemes[app];
+      if (!scheme) {
+        alert("App not supported.");
+        return;
+      }
+
+      const deepLink = `${scheme}?pa=merchant@upi&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
+
+      if (/Android/i.test(navigator.userAgent)) {
+        window.location.href = deepLink;
+        setTimeout(() => {
+          window.location.href = "thankyou.html";
+        }, 2000);
+      } else {
+        alert("UPI apps can only be opened on Android devices.");
+      }
+    }
+
+    function generateQR() {
+      const qrDiv = document.getElementById("qrcode");
+      qrDiv.classList.remove("hidden");
+      qrDiv.innerHTML = "";
+      new QRCode(qrDiv, {
+        text: upiLink,
+        width: 180,
+        height: 180
+      });
+    }
+  </script>
+</body>
+</html>
