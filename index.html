@@ -24,12 +24,14 @@
   <!-- Modal -->
   <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white p-6 rounded-lg w-80 space-y-4">
-      <h3 class="text-xl font-semibold text-center">Choose your UPI app to pay <span id="modalAmount">₹499</span></h3>
-      <div class="grid grid-cols-2 gap-4 text-center">
-        <button onclick="payWithApp()" class="bg-blue-600 text-white p-2 rounded col-span-2 hover:bg-blue-700">
-  Pay via UPI App
-</button>
-        <button onclick="generateQR()" class="bg-purple-600 text-white p-2 rounded col-span-2 hover:bg-purple-700">Or scan QR to pay</button>
+      <h3 class="text-xl font-semibold text-center">Pay ₹<span id="modalAmount">499</span> via UPI</h3>
+      <div class="space-y-2 text-center">
+        <button onclick="payWithUPI()" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 w-full">
+          Pay via UPI App
+        </button>
+        <button onclick="generateQR()" class="bg-purple-600 text-white p-2 rounded hover:bg-purple-700 w-full">
+          Or scan QR to pay
+        </button>
       </div>
       <div id="qrcode" class="flex justify-center mt-4 hidden"></div>
       <button onclick="closeModal()" class="text-sm text-gray-500 hover:underline block mx-auto">Cancel</button>
@@ -42,13 +44,16 @@
     const friendName = urlParams.get("name") || "Friend";
     const amount = urlParams.get("amount") || "499";
 
+    // Your UPI ID
+    const upiID = "varad2510@oksbi";
+
+    // Build UPI link
+    const upiLink = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
+
     // Update UI
     document.getElementById("friendName").textContent = friendName;
     document.getElementById("amount").textContent = `₹${amount}`;
-    document.getElementById("modalAmount").textContent = `₹${amount}`;
-
-    // Build UPI link
-    const upiLink = `upi://pay?pa=paytmqr1xquxkjxfb@paytm&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
+    document.getElementById("modalAmount").textContent = amount;
 
     function openModal() {
       document.getElementById("paymentModal").classList.remove("hidden");
@@ -60,29 +65,9 @@
       document.getElementById("qrcode").innerHTML = "";
     }
 
-   function payWithApp() {
-  const upiLink = `upi://pay?pa=varad2510@oksbi&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
-
-  if (/Android/i.test(navigator.userAgent)) {
-    window.location.href = upiLink;
-    setTimeout(() => {
-      window.location.href = "thankyou.html";
-    }, 2000);
-  } else {
-    alert("UPI apps can only be opened on Android devices.");
-  }
-}
-
-      const scheme = appSchemes[app];
-      if (!scheme) {
-        alert("App not supported.");
-        return;
-      }
-
-      const deepLink = `${scheme}?pa=paytmqr1xquxkjxfb@paytm&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
-
+    function payWithUPI() {
       if (/Android/i.test(navigator.userAgent)) {
-        window.location.href = deepLink;
+        window.location.href = upiLink;
         setTimeout(() => {
           window.location.href = "thankyou.html";
         }, 2000);
