@@ -26,11 +26,9 @@
     <div class="bg-white p-6 rounded-lg w-80 space-y-4">
       <h3 class="text-xl font-semibold text-center">Choose your UPI app to pay <span id="modalAmount">₹499</span></h3>
       <div class="grid grid-cols-2 gap-4 text-center">
-        <button onclick="payWithApp('GooglePay')" class="bg-gray-100 p-2 rounded hover:bg-gray-200">Google Pay</button>
-        <button onclick="payWithApp('PhonePe')" class="bg-gray-100 p-2 rounded hover:bg-gray-200">PhonePe</button>
-        <button onclick="payWithApp('Paytm')" class="bg-gray-100 p-2 rounded hover:bg-gray-200">Paytm</button>
-        <button onclick="payWithApp('BHIM')" class="bg-gray-100 p-2 rounded hover:bg-gray-200">BHIM</button>
-        <button onclick="payWithApp('AmazonPay')" class="bg-gray-100 p-2 rounded hover:bg-gray-200 col-span-2">Amazon Pay</button>
+        <button onclick="payWithApp()" class="bg-blue-600 text-white p-2 rounded col-span-2 hover:bg-blue-700">
+  Pay via UPI App
+</button>
         <button onclick="generateQR()" class="bg-purple-600 text-white p-2 rounded col-span-2 hover:bg-purple-700">Or scan QR to pay</button>
       </div>
       <div id="qrcode" class="flex justify-center mt-4 hidden"></div>
@@ -62,14 +60,18 @@
       document.getElementById("qrcode").innerHTML = "";
     }
 
-    function payWithApp(app) {
-      const appSchemes = {
-        GooglePay: "tez://upi/pay",
-        PhonePe: "phonepe://upi/pay",
-        Paytm: "paytmmp://pay",
-        BHIM: "bhim://upi/pay",
-        AmazonPay: "amazonpay://upi/pay"
-      };
+   function payWithApp() {
+  const upiLink = `upi://pay?pa=varad2510@oksbi&pn=${encodeURIComponent(friendName)}&am=${amount}&cu=INR&tn=PaymentReminder`;
+
+  if (/Android/i.test(navigator.userAgent)) {
+    window.location.href = upiLink;
+    setTimeout(() => {
+      window.location.href = "thankyou.html";
+    }, 2000);
+  } else {
+    alert("UPI apps can only be opened on Android devices.");
+  }
+}
 
       const scheme = appSchemes[app];
       if (!scheme) {
